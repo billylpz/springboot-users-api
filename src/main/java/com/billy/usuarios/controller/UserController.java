@@ -1,9 +1,13 @@
 package com.billy.usuarios.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.billy.usuarios.dto.UserDto;
 import com.billy.usuarios.model.User;
+import com.billy.usuarios.service.cloudinary.CloudinaryService;
 import com.billy.usuarios.service.interfaces.UserService;
 
 import jakarta.validation.Valid;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final CloudinaryService cloudinaryService;
 
     @GetMapping()
     public ResponseEntity<?> get() {
@@ -35,35 +40,56 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
-        Optional<User> userOptional = this.userService.findById(id);
+        Optional<UserDto> userOptional = this.userService.findById(id);
 
         return userOptional.map(u -> ResponseEntity.ok(u))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping()
-    public ResponseEntity<?> post(@RequestBody @Valid User user, BindingResult rs) {
+    public ResponseEntity<?> post(@RequestBody @Valid UserDto userDto, BindingResult rs) {
         if(rs.hasErrors()){
-            return this.validate(user, rs);
+            return this.validate(userDto, rs);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.save(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.save(userDto));
     }
 
 
+    //  @PostMapping()
+    // public ResponseEntity<?> createUser(@RequestPart("user") User user,
+    //                                     @RequestPart("file") MultipartFile file) {
+    //     try {
+    //         if (file != null && !file.isEmpty()) {
+    //             String url = cloudinaryService.uploadFile(file);
+    //             user.setUrlProfilePhoto(url);
+    //         }
+    //         User savedUser = userService.save(user);
+    //         return ResponseEntity.status(201).body(savedUser);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(500).body("Error al subir la foto");
+    //     }
+    // }
+
      @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody @Valid User user, BindingResult rs, @PathVariable Long id) {
+    public ResponseEntity<?> put(@RequestBody @Valid UserDto userDto, BindingResult rs, @PathVariable Long id) {
         if(rs.hasErrors()){
-            return this.validate(user, rs);
+            return this.validate(userDto, rs);
+        }
+        UserDto dto= this.userService.update(userDto,id);
+
+        if(dto!=null){
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.update(user,id));
+         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario a modificar no existe!");
+
     }
 
 
 
     // validation method
-    public ResponseEntity<?> validate(User user, BindingResult rs) {
+    public ResponseEntity<?> validate(UserDto userDto, BindingResult rs) {
         Map<String, String> errors = new HashMap<>();
         rs.getFieldErrors().forEach(e -> errors.put(e.getField(), e.getDefaultMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);

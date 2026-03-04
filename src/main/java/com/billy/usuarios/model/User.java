@@ -1,15 +1,12 @@
 package com.billy.usuarios.model;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+
 import lombok.Data;
 
 @Data
@@ -21,32 +18,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min = 2, max = 50)
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String name;
 
-    @NotBlank
-    @Size(min = 2, max = 50)
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String lastname;
 
-    @Min(0)
-    @Max(120)
+    @Column(nullable = false)
     private Integer age;
 
-    @NotBlank
-    @Size(min = 9, max = 20)
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String cellphone;
 
-    @NotBlank
-    @Email
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(name = "url_profile_photo")
     private String urlProfilePhoto;
-
 
 }

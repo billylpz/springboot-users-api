@@ -3,13 +3,13 @@ package com.billy.usuarios.service.interfaces;
 import java.util.List;
 import java.util.Optional;
 
-import com.billy.usuarios.model.User;
+import com.billy.usuarios.dto.UserDto;
 
 public interface UserService {
-    List<User> findAll();
-    Optional<User> findById(Long id);
-    User save(User user);
-    User update(User user, Long id);
+    List<UserDto> findAll();
+    Optional<UserDto> findById(Long id);
+    UserDto save(UserDto user);
+    UserDto update(UserDto user, Long id);
     void delete(Long id);
 
 }
