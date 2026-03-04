@@ -55,7 +55,8 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> post(
-            @ModelAttribute @Valid UserDto userDto, // ModelAtribute mapea las propiedades del form data a objeto UserDto
+            @ModelAttribute @Valid UserDto userDto, // ModelAtribute mapea las propiedades del form data a objeto
+                                                    // UserDto
             BindingResult rs,
             @RequestParam(required = false) MultipartFile file) {
 
@@ -64,16 +65,9 @@ public class UserController {
         }
 
         try {
-
-            // Subir imagen si viene
-            if (file != null && !file.isEmpty()) {
-                String url = cloudinaryService.uploadFile(file);
-                userDto.setUrlProfilePhoto(url); // agregas la url al DTO
-            }
-
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(this.userService.save(userDto));
+                    .body(this.userService.save(userDto, file));
 
         } catch (Exception e) {
             return ResponseEntity
@@ -83,17 +77,25 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@RequestBody @Valid UserDto userDto, BindingResult rs, @PathVariable Long id) {
+    public ResponseEntity<?> put(@ModelAttribute @Valid UserDto userDto, BindingResult rs, @PathVariable Long id,
+            @RequestParam(required = false) MultipartFile file) {
         if (rs.hasErrors()) {
             return this.validate(userDto, rs);
         }
-        UserDto dto = this.userService.update(userDto, id);
 
-        if (dto != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        try {
+            UserDto dto = this.userService.update(userDto, id, file);
+
+            if (dto != null) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario a modificar no existe!");
+            
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al subir la imagen");
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El usuario a modificar no existe!");
 
     }
 
