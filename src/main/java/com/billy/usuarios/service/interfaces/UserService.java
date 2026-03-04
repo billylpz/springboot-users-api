@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.billy.usuarios.model.User;
 
-public interface UsuarioService {
+public interface UserService {
     List<User> findAll();
     Optional<User> findById(Long id);
     User save(User user);
