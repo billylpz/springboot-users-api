@@ -17,9 +17,10 @@ public class CloudinaryService {
 
     private final Cloudinary cloudinary;
 
+    //método para enviar los archivos a nuestra nube en Cloudinary
     public String uploadFile(MultipartFile file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                ObjectUtils.asMap("resource_type", "auto"));
+                ObjectUtils.asMap("resource_type", "auto","folder", "db_usuariosv1/users/profile_photos"));
         return uploadResult.get("secure_url").toString();
     }
 }

@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.catalina.realm.UserDatabaseRealm.UserDatabasePrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.billy.usuarios.dto.UserDto;
+import com.billy.usuarios.mapper.UserMapper;
 import com.billy.usuarios.model.User;
 import com.billy.usuarios.repository.UserRepository;
 import com.billy.usuarios.service.interfaces.UserService;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAll() {
         return this.repository.findAll()
                 .stream()
-                .map(u->this.userToDto(u))
+                .map(u->UserMapper.userToDto(u))
                 .collect(Collectors.toList());
     }
 
@@ -34,40 +34,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public Optional<UserDto> findById(Long id) {
-        return this.repository.findById(id).map(u->this.userToDto(u));
+        return this.repository.findById(id).map(u->UserMapper.userToDto(u));
     }
 
     @Override
     @Transactional
     public UserDto save(UserDto userDto) {
-        User user = this.dtoToUser(userDto);
+        User user = UserMapper.dtoToUser(userDto);
 
-        return this.userToDto(this.repository.save(user));
+        return UserMapper.userToDto(this.repository.save(user));
     }
 
-    public UserDto userToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setLastname(user.getLastname());
-        dto.setEmail(user.getEmail());
-        dto.setCellphone(user.getCellphone());
-        dto.setAge(user.getAge());
-        dto.setUrlProfilePhoto(user.getUrlProfilePhoto());
-        return dto;
-    }
-
-    public User dtoToUser(UserDto userDto) {
-        User user = new User();
-        user.setName(userDto.getName());
-        user.setLastname(userDto.getLastname());
-        user.setEmail(userDto.getEmail());
-        user.setCellphone(userDto.getCellphone());
-        user.setAge(userDto.getAge());
-        user.setUrlProfilePhoto(userDto.getUrlProfilePhoto());
-        return user;
-    }
-
+   
     @Override
     @Transactional
     public UserDto update(UserDto userDto, Long id) {
@@ -81,7 +59,7 @@ public class UserServiceImpl implements UserService {
             userDb.setAge(userDto.getAge());
             userDb.setCellphone(userDto.getCellphone());
             userDb.setUrlProfilePhoto(userDto.getUrlProfilePhoto());
-            return this.userToDto(this.repository.save(userDb));
+            return UserMapper.userToDto(this.repository.save(userDb));
         }
 
         return null;
