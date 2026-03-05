@@ -69,7 +69,10 @@ public class UserServiceImpl implements UserService {
             userDb.setEmail(userDto.getEmail());
             userDb.setAge(userDto.getAge());
             userDb.setCellphone(userDto.getCellphone());
-            userDb.setUrlProfilePhoto(userDto.getUrlProfilePhoto());
+
+            if(userDto.getUrlProfilePhoto()!=null){
+                userDb.setUrlProfilePhoto(userDto.getUrlProfilePhoto());
+            }
 
             this.checkAndAssignPhoto(userDb,file) ;
 
