@@ -1,10 +1,10 @@
 package com.billy.usuarios.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -22,6 +22,7 @@ public class UserDto {
 
     @Min(0)
     @Max(120)
+    @NotNull
     private Integer age;
 
     @NotBlank
